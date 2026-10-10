@@ -16,6 +16,7 @@
     <img alt="lich" src="https://img.shields.io/badge/lich-0.65%2B-9b7cf0" />
     <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-AGPL--3.0-blue" /></a>
   </p>
+  <img src="docs/media/chooser.png" alt="A selection in IntelliJ IDEA and the Send to lich list: a Claude Code session and two shell sessions on the project, and Open a new claude session here" width="900" />
 </div>
 
 ## Nothing is sent for you
@@ -51,6 +52,12 @@ when one **finishes its turn** or **stops on a permission prompt**. Hover for ea
 click to list them, and pick one to open its card in lich.
 
 **Show in lich**, on every balloon, brings the lich window forward with that session open.
+
+<p>
+  <img src="docs/media/tooltip.png" alt="The status bar tooltip listing three sessions with their state and folder" height="132" />
+  &nbsp;
+  <img src="docs/media/balloon.png" alt="A balloon saying Session 1 finished its turn, with Show in lich" height="90" />
+</p>
 
 ## Which session
 
