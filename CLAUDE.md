@@ -86,7 +86,8 @@ Non-negotiable. A violation means the work is not done.
 ## Releases
 
 Publishing goes to the JetBrains Marketplace. The very first upload is manual (plugins.jetbrains.com › Upload
-plugin, then JetBrains' review); every release after it is a tag:
+plugin, then JetBrains' review); every release after it is a tag. The `publish` skill
+(`.claude/skills/publish/`) walks this list when the user asks for a release:
 
 - [ ] Local gate green, `verifyPlugin` included.
 - [ ] Bump `pluginVersion` in `gradle.properties`.
