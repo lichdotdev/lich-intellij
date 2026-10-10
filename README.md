@@ -56,6 +56,8 @@ dialog.
 ## Requirements
 
 - lich 0.65.0 or newer, the first release with `lich insert`. An older lich is recognised and the plugin says so.
+- lich 0.66.0 or newer for **Show in lich** to open the session's card (`lich focus`); with 0.65.0 it brings the
+  lich window forward without opening the session.
 - lich must be running; the plugin talks to it through the `lich` command, the part of lich that is covered by its
   [stability promise](https://github.com/omartelo/lich/blob/main/docs/stability.md).
 - An IDE of build 242 (2024.2) or newer.
