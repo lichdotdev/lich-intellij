@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-10
+
 ### Added
 
 - **Send Selection to lich** pastes the selected code, headed by its file and lines, at the prompt of the lich
@@ -30,4 +32,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sessions wear their provider's mark** — Claude Code, Codex, Antigravity, opencode, oh-my-pi, Cursor — in
   every list, and a terminal for a shell session.
 
-[Unreleased]: https://github.com/omartelo/lich-intellij/commits/main
+[Unreleased]: https://github.com/lichdotdev/lich-intellij/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/lichdotdev/lich-intellij/commits/v0.1.0
