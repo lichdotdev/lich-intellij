@@ -47,7 +47,7 @@ used as given, after checking it is greater than the current one.
 
 All must pass; a failure is reported with its output and the release stops there. Never skip a task to get green.
 
-- `ps -eo args | grep "[i]dea-sandbox"` prints nothing — a running `runIde` makes `buildSearchableOptions` fail. Ask the user to close
+- `ps -eo args | grep "[i]ntellijPlatform/sandbox"` prints nothing — a running `runIde` makes `buildSearchableOptions` fail. Ask the user to close
   it rather than killing it: it may hold unsaved work.
 - `df -h ~` shows at least 20 GB free: the verification downloads and extracts IDEs (`docs/ceilings.md` ›
   IntelliJ). Less than that, stop and tell the user what is using it rather than filling the disk.
