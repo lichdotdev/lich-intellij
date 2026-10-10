@@ -31,21 +31,27 @@
     <actions>
         <action id="Lich.SendSelection"
                 class="dev.lich.intellij.SendSelectionAction"
+                icon="/icons/lich.svg"
                 text="Send Selection to lich"
                 description="Paste the selected code, with its file and lines, at the prompt of a lich session">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="ToolsMenu" anchor="last"/>
             <!-- Unbound in the default keymap; rebind it in Settings › Keymap. -->
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt shift L"/>
         </action>
         <action id="Lich.SendFile"
                 class="dev.lich.intellij.SendFileAction"
+                icon="/icons/lich.svg"
                 text="Send File to lich"
                 description="Paste the path of the file, or of the selected files, at the prompt of a lich session">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
             <add-to-group group-id="EditorTabPopupMenu" anchor="last"/>
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
+        <group id="Lich.EditorPopup">
+            <separator/>
+            <reference ref="Lich.SendSelection"/>
+            <reference ref="Lich.SendFile"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </group>
     </actions>
 </idea-plugin>

@@ -1,5 +1,6 @@
 package dev.lich.intellij
 
+import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationGroupManager
@@ -10,7 +11,9 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.ui.SimpleListCellRenderer
+import com.intellij.openapi.util.IconLoader
+import com.intellij.ui.ColoredListCellRenderer
+import com.intellij.ui.SimpleTextAttributes
 import dev.lich.intellij.core.Chooser
 import dev.lich.intellij.core.Decision
 import dev.lich.intellij.core.Inserted
@@ -18,6 +21,8 @@ import dev.lich.intellij.core.LichClient
 import dev.lich.intellij.core.LichLocator
 import dev.lich.intellij.core.Peer
 import dev.lich.intellij.core.SessionMatcher
+import javax.swing.Icon
+import javax.swing.JList
 
 /**
  * Takes text from the IDE to a lich session: finds the session, asks only when
@@ -56,23 +61,39 @@ class SendFlow(private val project: Project, private val text: String) {
     private fun choose(client: LichClient, ask: Decision.Ask) {
         JBPopupFactory.getInstance()
             .createPopupChooserBuilder(ask.peers)
-            .setTitle(ask.reason)
-            .setRenderer(
-                SimpleListCellRenderer.create<Peer> { label, peer, _ ->
-                    label.text = describe(peer)
-                    label.isEnabled = SessionMatcher.takesText(peer)
-                },
-            )
+            .setTitle("Send to lich")
+            .setAdText(ask.reason)
+            .setRenderer(PeerRenderer())
             .setNamerForFiltering { it.label + " " + it.project }
             .setItemChosenCallback { insert(client, it) }
             .createPopup()
             .showCenteredInCurrentWindow(project)
     }
 
-    private fun describe(peer: Peer): String {
-        val where = if (peer.path.isNotEmpty() && peer.path != peer.projectPath) " — ${peer.path}" else ""
-        val waiting = if (SessionMatcher.takesText(peer)) "" else " (waiting on a permission)"
-        return "${peer.label}  ·  ${peer.project}  ·  ${peer.kind}$where$waiting"
+    private class PeerRenderer : ColoredListCellRenderer<Peer>() {
+        override fun customizeCellRenderer(list: JList<out Peer>, peer: Peer, index: Int, selected: Boolean, hasFocus: Boolean) {
+            val takesText = SessionMatcher.takesText(peer)
+            icon = iconOf(peer.kind)
+            append(peer.label, if (takesText) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES)
+            append("  ${peer.kind}", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+            append("  ${peer.project}", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+            if (peer.path.isNotEmpty() && peer.path != peer.projectPath) {
+                append("  ${peer.path.substringAfterLast('/')}", SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES)
+            }
+            if (!takesText) append("  waiting on a permission", SimpleTextAttributes.ERROR_ATTRIBUTES)
+        }
+
+        private fun iconOf(kind: String): Icon = when (kind) {
+            "shell" -> AllIcons.Nodes.Console
+            in BRANDED_KINDS -> IconLoader.getIcon("/icons/providers/$kind.svg", PeerRenderer::class.java)
+            else -> IconLoader.getIcon("/icons/lich.svg", PeerRenderer::class.java)
+        }
+
+        private companion object {
+            // The marks lich itself draws, vendored from @lobehub/icons (MIT, github.com/lobehub/lobe-icons)
+            // by way of lich's ProviderIcon.tsx. Crush and Kiro have no mark there and wear lich's.
+            val BRANDED_KINDS = setOf("claude", "codex", "antigravity", "opencode", "omp", "cursor")
+        }
     }
 
     private fun insert(client: LichClient, peer: Peer) {
