@@ -19,6 +19,9 @@ and the rest to a [lich](https://github.com/omartelo/lich) session.
 - **Send problem to lich** (`Alt+Enter` on an error or warning, or right-click it in the Problems view) pastes what the IDE says about it, over the lines
   it is about.
 
+- **Send Changes to lich** (right-click changed files in the Commit view) pastes their diff, for a review or a
+  commit message.
+
 - **Send Failure to lich** (right-click a failed test, class or suite in the test runner) pastes each failed test
   with its file and line, and its message and stack trace.
 

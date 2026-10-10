@@ -23,6 +23,8 @@ dependencies {
         // same platform (IDEA, PyCharm, WebStorm, GoLand, CLion, Rider, ...): the
         // plugin depends on the platform alone, not on any language's support.
         intellijIdeaCommunity("2024.2.5")
+        // Not on the compile classpath by default; the patch builder the Commit view's "Create Patch" uses lives here.
+        bundledModule("intellij.platform.vcs.impl")
         pluginVerifier()
         zipSigner()
         testFramework(TestFrameworkType.Platform)

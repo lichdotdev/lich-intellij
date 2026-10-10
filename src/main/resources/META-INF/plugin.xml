@@ -17,6 +17,7 @@
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.vcs</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="dev.lich.intellij.LichSettings"/>
@@ -65,6 +66,13 @@
                 text="Send Problem to lich"
                 description="Paste the problem, with the line it is on, at the prompt of a lich session">
             <add-to-group group-id="ProblemsView.ToolWindow.TreePopup" anchor="last"/>
+        </action>
+        <action id="Lich.SendChanges"
+                class="dev.lich.intellij.SendChangesAction"
+                icon="/icons/lich.svg"
+                text="Send Changes to lich"
+                description="Paste the diff of the selected changes at the prompt of a lich session">
+            <add-to-group group-id="ChangesViewPopupMenu" anchor="last"/>
         </action>
         <group id="Lich.EditorPopup">
             <separator/>

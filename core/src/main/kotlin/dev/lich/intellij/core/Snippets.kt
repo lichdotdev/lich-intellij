@@ -45,6 +45,10 @@ object Snippets {
     fun problems(problems: List<Problem>, code: Selection, fenced: Boolean): String =
         problems.joinToString("") { "${it.severity}: ${it.message}\n" } + selection(code, fenced)
 
+    /** A unified [diff] of uncommitted changes, headed by how many files it touches. */
+    fun changes(diff: String, files: Int, fenced: Boolean): String =
+        block("Uncommitted changes, $files ${if (files == 1) "file" else "files"}:", diff, "diff", fenced)
+
     /**
      * Each failure under a `Failing test:` line naming it and where it is, with
      * its trace. Runners mostly start the trace with the exception and its

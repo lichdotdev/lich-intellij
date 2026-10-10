@@ -96,4 +96,11 @@ class SnippetsTest {
             Snippets.problems(problems, selection("val x = foo()", 7, 7), fenced = true),
         )
     }
+
+    @Test
+    fun `a diff is headed by how many files it changes`() {
+        val diff = "--- a/A.kt\n+++ b/A.kt\n@@ -1 +1 @@\n-x\n+y\n"
+        assertEquals("Uncommitted changes, 2 files:\n```diff\n${diff.trimEnd()}\n```\n", Snippets.changes(diff, 2, fenced = true))
+        assertEquals("Uncommitted changes, 1 file:\n${diff}", Snippets.changes(diff, 1, fenced = false))
+    }
 }
