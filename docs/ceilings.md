@@ -49,5 +49,15 @@ work when nobody knows it and that the call site never shows. The mechanism and 
   IDEA can be run at a time", which fails `buildPlugin`.
 - **The sandbox's dynamic reload keeps old menus**: `prepareSandbox` against a running `runIde` reloads the
   plugin's classes, but actions, groups and icons from a changed `plugin.xml` show only after a restart.
+- **The plugin compiles against the oldest supported IDE's runtime, not the newest**: the Kotlin stdlib and Gson
+  come from the IDE at run time, so `apiVersion` (2.0) and the `compileOnly` Gson (2.11.0) match what 2024.3, the
+  `sinceBuild`, bundles. Raising `sinceBuild` is the only way to use newer stdlib or Gson APIs, and lowering it
+  needs both moved down — which Kotlin 2.4 no longer allows below API 2.0. Kotlin already warns that API 2.0 is
+  deprecated: a Kotlin release that drops it forces `sinceBuild` up with it.
+- **`verifyPlugin` checks two IDEs, and its newest is pinned by hand** (`build.gradle.kts`): the oldest supported
+  and one recent release, not the seven `recommended()` picks. Each IDE is several gigabytes downloaded and as much
+  again extracted under `~/.gradle/caches/<gradle>/transforms`, and the verifier adds gigabytes of plugins in
+  `~/.pluginVerifier`; seven filled a 475 GB disk and would fill a CI runner's. A release newer than the pinned
+  one goes unverified until someone moves the pin. Neither cache is cleaned by Gradle on its own.
 - **Crush and Kiro have no provider mark**: the icons come from lich's own vendored `@lobehub/icons` set, which
   has none for them; their sessions wear lich's icon.

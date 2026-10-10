@@ -1,7 +1,9 @@
-# lich for JetBrains IDEs
+# lich for IntelliJ IDEA
 
-Send what you are looking at in IntelliJ IDEA, PyCharm, WebStorm, GoLand, CLion, Rider, RubyMine, PhpStorm
-and the rest to a [lich](https://github.com/omartelo/lich) session.
+Send what you are looking at in IntelliJ IDEA to a [lich](https://github.com/omartelo/lich) session.
+
+Built and tested on IntelliJ IDEA only. The plugin depends on the IntelliJ Platform alone, so PyCharm, WebStorm and
+the other JetBrains IDEs may run it, but nobody checks that they do; if you use one, fixes are welcome.
 
 - **Send Selection to lich** (`Ctrl+Alt+Shift+L`, or the editor's right-click menu) pastes the selected code at the
   prompt of the session running on your project, headed by its file and lines:
@@ -60,7 +62,7 @@ dialog.
   lich window forward without opening the session.
 - lich must be running; the plugin talks to it through the `lich` command, the part of lich that is covered by its
   [stability promise](https://github.com/omartelo/lich/blob/main/docs/stability.md).
-- An IDE of build 242 (2024.2) or newer.
+- An IDE of build 243 (2024.3) or newer.
 
 The `lich` command is searched on `PATH`, then where lich installs it (Homebrew, `/usr/local/bin`, `~/.local/bin`,
 Scoop's shims), then through your login shell — an IDE started from a launcher does not inherit the PATH of your

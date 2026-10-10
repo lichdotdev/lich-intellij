@@ -47,8 +47,13 @@ used as given, after checking it is greater than the current one.
 
 All must pass; a failure is reported with its output and the release stops there. Never skip a task to get green.
 
-- `pgrep -f idea-sandbox` is empty — a running `runIde` makes `buildSearchableOptions` fail. Ask the user to close
+- `ps -eo args | grep "[i]dea-sandbox"` prints nothing — a running `runIde` makes `buildSearchableOptions` fail. Ask the user to close
   it rather than killing it: it may hold unsaved work.
+- `df -h ~` shows at least 20 GB free: the verification downloads and extracts IDEs (`docs/ceilings.md` ›
+  IntelliJ). Less than that, stop and tell the user what is using it rather than filling the disk.
+- `mise exec -- ./gradlew printProductsReleases` lists the current IDE releases. When one is newer than the
+  newest pinned in `build.gradle.kts` › `pluginVerification`, ask the user whether to move the pin before
+  verifying.
 - `mise exec -- ./gradlew test buildPlugin verifyPlugin`. `verifyPlugin` downloads the recommended IDEs and takes
   minutes; its report is what tells whether an internal IntelliJ API the plugin uses (`docs/ceilings.md` ›
   IntelliJ) has moved. A compatibility problem blocks the release; a deprecation warning is reported to the user,

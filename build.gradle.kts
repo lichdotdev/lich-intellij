@@ -1,14 +1,18 @@
 import org.jetbrains.changelog.Changelog
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
-    kotlin("jvm") version "2.0.21"
-    id("org.jetbrains.intellij.platform") version "2.2.1"
-    id("org.jetbrains.changelog") version "2.2.1"
+    kotlin("jvm") version "2.4.21"
+    id("org.jetbrains.intellij.platform") version "2.19.0"
+    id("org.jetbrains.changelog") version "2.5.0"
 }
 
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
+
+// Built against, and verified on, the oldest IDE sinceBuild admits.
+val oldestSupportedIde = "2024.3.7"
 
 repositories {
     mavenCentral()
@@ -21,10 +25,9 @@ dependencies {
     implementation(project(":core"))
 
     intellijPlatform {
-        // Built against the Community edition and runs in every IDE built on the
-        // same platform (IDEA, PyCharm, WebStorm, GoLand, CLion, Rider, ...): the
-        // plugin depends on the platform alone, not on any language's support.
-        intellijIdeaCommunity("2024.2.5")
+        // Built against IntelliJ IDEA Community. The plugin depends on the platform alone, not on any language's
+        // support, so other JetBrains IDEs can install it, untested.
+        intellijIdeaCommunity(oldestSupportedIde)
         // Not on the compile classpath by default; the patch builder the Commit view's "Create Patch" uses lives here.
         bundledModule("intellij.platform.vcs.impl")
         pluginVerifier()
@@ -45,15 +48,18 @@ intellijPlatform {
             }
         }
         ideaVersion {
-            sinceBuild = "242"
+            sinceBuild = "243"
             // Open-ended: the platform APIs used here are long-stable, and
             // pluginVerification below is what says when a release stops working.
             untilBuild = provider { null }
         }
     }
     pluginVerification {
+        // The two ends of the supported range, not recommended()'s seven: each IDE is gigabytes extracted, and seven
+        // fill a CI runner's disk (and filled a laptop's). The newest is bumped by hand; see docs/ceilings.md.
         ides {
-            recommended()
+            create(IntelliJPlatformType.IntellijIdeaCommunity, oldestSupportedIde)
+            create(IntelliJPlatformType.IntellijIdea, "2026.2.3")
         }
     }
     // Read from the environment only at signing and publishing time, so a local build needs none of them.
@@ -70,6 +76,11 @@ intellijPlatform {
 
 kotlin {
     jvmToolchain(21)
+    compilerOptions {
+        // The oldest IDE supported (sinceBuild 243) runs on the Kotlin stdlib it bundles, 2.0: a call into anything
+        // newer compiles here and fails there with NoSuchMethodError.
+        apiVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
+    }
 }
 
 changelog {

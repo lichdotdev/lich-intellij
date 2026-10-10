@@ -1,4 +1,4 @@
-# lich for JetBrains IDEs
+# lich for IntelliJ IDEA
 
 An IntelliJ Platform plugin that sends what the developer is looking at — a selection, a file, a failed test, a
 problem, a diff — to a [lich](https://github.com/omartelo/lich) session, and shows the project's sessions in the
@@ -31,8 +31,10 @@ lives in the code, `README.md`, `docs/` and `CHANGELOG.md` — never restate any
 - Every `lich` child process starts from `LichProcess.builder`, never a bare `ProcessBuilder`.
 - The IDE ships the Kotlin runtime and Gson; both stay `compileOnly` in `core/`. Bundling either breaks class
   loading against the platform's copy.
-- The plugin depends on `com.intellij.modules.platform` and `com.intellij.modules.vcs` only, so it runs in every
-  JetBrains IDE. A dependency on a language plugin (Java, Kotlin, …) is a design change, not a convenience.
+- IntelliJ IDEA is the one IDE supported, built against and verified on. The plugin still depends on
+  `com.intellij.modules.platform` and `com.intellij.modules.vcs` only, so other JetBrains IDEs can install it
+  untested; a dependency on a language plugin (Java, Kotlin, …) would take that away and is a design change, not a
+  convenience.
 
 ## Local gate (before every commit)
 

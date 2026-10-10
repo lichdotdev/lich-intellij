@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>io.omartelo.lich.intellij</id>
+    <id>io.omartelo.lich</id>
     <name>lich</name>
     <vendor url="https://github.com/omartelo/lich">lich</vendor>
 
