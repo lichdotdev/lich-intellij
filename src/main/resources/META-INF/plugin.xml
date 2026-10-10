@@ -1,0 +1,51 @@
+<idea-plugin>
+    <id>dev.lich.intellij</id>
+    <name>lich</name>
+    <vendor url="https://github.com/omartelo/lich">lich</vendor>
+
+    <description><![CDATA[
+        Send what you are looking at in the IDE to a <a href="https://github.com/omartelo/lich">lich</a>
+        session.
+        <ul>
+            <li><b>Send selection to lich</b> pastes the selected code, with its file and line range,
+                at the prompt of the session running on this project.</li>
+            <li><b>Send file to lich</b> pastes the path of the current file, or of every file selected
+                in the Project view.</li>
+        </ul>
+        Nothing is sent for you: the text lands at the prompt, ready for you to write the question
+        around it and press Enter. Requires lich with <code>lich insert</code>.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="dev.lich.intellij.LichSettings"/>
+        <applicationConfigurable
+            parentId="tools"
+            instance="dev.lich.intellij.LichConfigurable"
+            id="dev.lich.intellij.settings"
+            displayName="lich"/>
+        <notificationGroup id="lich" displayType="BALLOON"/>
+    </extensions>
+
+    <actions>
+        <action id="Lich.SendSelection"
+                class="dev.lich.intellij.SendSelectionAction"
+                text="Send Selection to lich"
+                description="Paste the selected code, with its file and lines, at the prompt of a lich session">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <!-- Unbound in the default keymap; rebind it in Settings › Keymap. -->
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt shift L"/>
+        </action>
+        <action id="Lich.SendFile"
+                class="dev.lich.intellij.SendFileAction"
+                text="Send File to lich"
+                description="Paste the path of the file, or of the selected files, at the prompt of a lich session">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="EditorTabPopupMenu" anchor="last"/>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>
