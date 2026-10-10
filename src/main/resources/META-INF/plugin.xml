@@ -27,6 +27,7 @@
             id="dev.lich.intellij.settings"
             displayName="lich"/>
         <notificationGroup id="lich" displayType="BALLOON"/>
+        <statusBarWidgetFactory id="lich.sessions" implementation="dev.lich.intellij.LichStatusWidgetFactory"/>
         <intentionAction>
             <className>dev.lich.intellij.SendProblemIntention</className>
             <category>lich</category>

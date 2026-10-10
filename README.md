@@ -25,6 +25,10 @@ and the rest to a [lich](https://github.com/omartelo/lich) session.
 - **Send Failure to lich** (right-click a failed test, class or suite in the test runner) pastes each failed test
   with its file and line, and its message and stack trace.
 
+- **The status bar** shows the lich sessions on your project (`lich: 1 waiting · 2 working`), and a balloon tells you
+  when one finishes its turn or stops on a permission prompt. Click it to list them; picking one brings lich forward.
+  lich has no supported way to push changes, so the plugin asks `lich sessions` every 5 seconds.
+
 **Nothing is sent for you.** The text lands at the prompt, after whatever you had already typed there, and waits:
 you write the question around it and press Enter. That is deliberate — a selection is context, and what to ask
 about it is yours.

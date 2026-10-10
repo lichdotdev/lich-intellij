@@ -2,16 +2,12 @@ package dev.lich.intellij
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.notification.NotificationAction
-import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import dev.lich.intellij.core.Chooser
@@ -19,10 +15,7 @@ import dev.lich.intellij.core.Decision
 import dev.lich.intellij.core.Inserted
 import dev.lich.intellij.core.LichClient
 import dev.lich.intellij.core.LichLocator
-import dev.lich.intellij.core.LichProcess
 import dev.lich.intellij.core.Peer
-import dev.lich.intellij.core.SessionMatcher
-import javax.swing.Icon
 import javax.swing.JList
 
 /**
@@ -95,36 +88,12 @@ class SendFlow(private val project: Project, private val text: String) {
     private class ChoiceRenderer : ColoredListCellRenderer<Choice>() {
         override fun customizeCellRenderer(list: JList<out Choice>, choice: Choice, index: Int, selected: Boolean, hasFocus: Boolean) {
             when (choice) {
-                is Choice.Running -> running(choice.peer)
+                is Choice.Running -> PeerPresentation.render(this, choice.peer)
                 is Choice.New -> {
                     icon = AllIcons.General.Add
                     append("Open a new ${choice.kind} session here", SimpleTextAttributes.REGULAR_ATTRIBUTES)
                 }
             }
-        }
-
-        private fun running(peer: Peer) {
-            val takesText = SessionMatcher.takesText(peer)
-            icon = iconOf(peer.kind)
-            append(peer.label, if (takesText) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES)
-            append("  ${peer.kind}", SimpleTextAttributes.GRAYED_ATTRIBUTES)
-            append("  ${peer.project}", SimpleTextAttributes.GRAYED_ATTRIBUTES)
-            if (peer.path.isNotEmpty() && peer.path != peer.projectPath) {
-                append("  ${peer.path.substringAfterLast('/')}", SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES)
-            }
-            if (!takesText) append("  waiting on a permission", SimpleTextAttributes.ERROR_ATTRIBUTES)
-        }
-
-        private fun iconOf(kind: String): Icon = when (kind) {
-            "shell" -> AllIcons.Nodes.Console
-            in BRANDED_KINDS -> IconLoader.getIcon("/icons/providers/$kind.svg", ChoiceRenderer::class.java)
-            else -> IconLoader.getIcon("/icons/lich.svg", ChoiceRenderer::class.java)
-        }
-
-        private companion object {
-            // The marks lich itself draws, vendored from @lobehub/icons (MIT, github.com/lobehub/lobe-icons)
-            // by way of lich's ProviderIcon.tsx. Crush and Kiro have no mark there and wear lich's.
-            val BRANDED_KINDS = setOf("claude", "codex", "antigravity", "opencode", "omp", "cursor")
         }
     }
 
@@ -146,31 +115,15 @@ class SendFlow(private val project: Project, private val text: String) {
     }
 
     private fun sent(inserted: Inserted) {
-        NotificationGroupManager.getInstance().getNotificationGroup(GROUP)
-            .createNotification(
-                "Pasted at the prompt of “${inserted.label}” (${inserted.project}). Nothing was sent: it is waiting for you.",
-                NotificationType.INFORMATION,
-            )
-            .addAction(NotificationAction.createSimple("Show lich") { raise() })
-            .notify(project)
+        LichWindow.notify(
+            project,
+            "Pasted at the prompt of “${inserted.label}” (${inserted.project}). Nothing was sent: it is waiting for you.",
+            NotificationType.INFORMATION,
+            offerShow = true,
+        )
     }
 
-    /** A second launch of lich hands over to the one running and exits, which is how its window is raised. */
-    private fun raise() {
-        ApplicationManager.getApplication().executeOnPooledThread {
-            try {
-                LichProcess.builder(listOf(LichLocator.find(settings.command, IdeEnvironment))).start()
-            } catch (e: Exception) {
-                notify(e.message ?: "Could not open lich", NotificationType.WARNING)
-            }
-        }
-    }
-
-    private fun notify(message: String, type: NotificationType) {
-        NotificationGroupManager.getInstance().getNotificationGroup(GROUP)
-            .createNotification(message, type)
-            .notify(project)
-    }
+    private fun notify(message: String, type: NotificationType) = LichWindow.notify(project, message, type)
 
     private fun <T : Any> background(title: String, work: () -> T, then: (T) -> Unit) {
         ProgressManager.getInstance().run(object : Task.Backgroundable(project, title, false) {
@@ -195,7 +148,6 @@ class SendFlow(private val project: Project, private val text: String) {
     }
 
     private companion object {
-        const val GROUP = "lich"
         const val LAST_SESSION = "dev.lich.intellij.lastSession"
 
         // A new session's agent has to start before it shows a prompt; the slowest providers take tens of seconds.
