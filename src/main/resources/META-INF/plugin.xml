@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>dev.lich.intellij</id>
+    <id>io.omartelo.lich.intellij</id>
     <name>lich</name>
     <vendor url="https://github.com/omartelo/lich">lich</vendor>
 
@@ -20,16 +20,16 @@
     <depends>com.intellij.modules.vcs</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="dev.lich.intellij.LichSettings"/>
+        <applicationService serviceImplementation="io.omartelo.lich.intellij.LichSettings"/>
         <applicationConfigurable
             parentId="tools"
-            instance="dev.lich.intellij.LichConfigurable"
-            id="dev.lich.intellij.settings"
+            instance="io.omartelo.lich.intellij.LichConfigurable"
+            id="io.omartelo.lich.intellij.settings"
             displayName="lich"/>
         <notificationGroup id="lich" displayType="BALLOON"/>
-        <statusBarWidgetFactory id="lich.sessions" implementation="dev.lich.intellij.LichStatusWidgetFactory"/>
+        <statusBarWidgetFactory id="lich.sessions" implementation="io.omartelo.lich.intellij.LichStatusWidgetFactory"/>
         <intentionAction>
-            <className>dev.lich.intellij.SendProblemIntention</className>
+            <className>io.omartelo.lich.intellij.SendProblemIntention</className>
             <category>lich</category>
             <skipBeforeAfter>true</skipBeforeAfter>
         </intentionAction>
@@ -37,7 +37,7 @@
 
     <actions>
         <action id="Lich.SendSelection"
-                class="dev.lich.intellij.SendSelectionAction"
+                class="io.omartelo.lich.intellij.SendSelectionAction"
                 icon="/icons/lich.svg"
                 text="Send Selection to lich"
                 description="Paste the selected code, with its file and lines, at the prompt of a lich session">
@@ -46,7 +46,7 @@
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt shift L"/>
         </action>
         <action id="Lich.SendFile"
-                class="dev.lich.intellij.SendFileAction"
+                class="io.omartelo.lich.intellij.SendFileAction"
                 icon="/icons/lich.svg"
                 text="Send File to lich"
                 description="Paste the path of the file, or of the selected files, at the prompt of a lich session">
@@ -55,21 +55,21 @@
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
         <action id="Lich.SendTestFailure"
-                class="dev.lich.intellij.SendTestFailureAction"
+                class="io.omartelo.lich.intellij.SendTestFailureAction"
                 icon="/icons/lich.svg"
                 text="Send Failure to lich"
                 description="Paste the failed tests, with their messages and traces, at the prompt of a lich session">
             <add-to-group group-id="TestTreePopupMenu" anchor="last"/>
         </action>
         <action id="Lich.SendProblem"
-                class="dev.lich.intellij.SendProblemNodeAction"
+                class="io.omartelo.lich.intellij.SendProblemNodeAction"
                 icon="/icons/lich.svg"
                 text="Send Problem to lich"
                 description="Paste the problem, with the line it is on, at the prompt of a lich session">
             <add-to-group group-id="ProblemsView.ToolWindow.TreePopup" anchor="last"/>
         </action>
         <action id="Lich.SendChanges"
-                class="dev.lich.intellij.SendChangesAction"
+                class="io.omartelo.lich.intellij.SendChangesAction"
                 icon="/icons/lich.svg"
                 text="Send Changes to lich"
                 description="Paste the diff of the selected changes at the prompt of a lich session">
