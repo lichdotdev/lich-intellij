@@ -55,8 +55,7 @@ dialog.
 
 ## Requirements
 
-- lich with `lich insert` (the release after 0.x — see the lich changelog). An older lich is recognised and the
-  plugin says so.
+- lich 0.65.0 or newer, the first release with `lich insert`. An older lich is recognised and the plugin says so.
 - lich must be running; the plugin talks to it through the `lich` command, the part of lich that is covered by its
   [stability promise](https://github.com/omartelo/lich/blob/main/docs/stability.md).
 - An IDE of build 242 (2024.2) or newer.
