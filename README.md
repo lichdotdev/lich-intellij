@@ -16,6 +16,12 @@ and the rest to a [lich](https://github.com/omartelo/lich) session.
 - **Send File to lich** (editor, editor tab or Project view right-click menu) pastes the path of the current file,
   or of every file you selected in the Project view.
 
+- **Send problem to lich** (`Alt+Enter` on an error or warning, or right-click it in the Problems view) pastes what the IDE says about it, over the lines
+  it is about.
+
+- **Send Failure to lich** (right-click a failed test, class or suite in the test runner) pastes each failed test
+  with its file and line, and its message and stack trace.
+
 **Nothing is sent for you.** The text lands at the prompt, after whatever you had already typed there, and waits:
 you write the question around it and press Enter. That is deliberate — a selection is context, and what to ask
 about it is yours.

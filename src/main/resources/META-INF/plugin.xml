@@ -26,6 +26,11 @@
             id="dev.lich.intellij.settings"
             displayName="lich"/>
         <notificationGroup id="lich" displayType="BALLOON"/>
+        <intentionAction>
+            <className>dev.lich.intellij.SendProblemIntention</className>
+            <category>lich</category>
+            <skipBeforeAfter>true</skipBeforeAfter>
+        </intentionAction>
     </extensions>
 
     <actions>
@@ -46,6 +51,20 @@
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
             <add-to-group group-id="EditorTabPopupMenu" anchor="last"/>
             <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+        <action id="Lich.SendTestFailure"
+                class="dev.lich.intellij.SendTestFailureAction"
+                icon="/icons/lich.svg"
+                text="Send Failure to lich"
+                description="Paste the failed tests, with their messages and traces, at the prompt of a lich session">
+            <add-to-group group-id="TestTreePopupMenu" anchor="last"/>
+        </action>
+        <action id="Lich.SendProblem"
+                class="dev.lich.intellij.SendProblemNodeAction"
+                icon="/icons/lich.svg"
+                text="Send Problem to lich"
+                description="Paste the problem, with the line it is on, at the prompt of a lich session">
+            <add-to-group group-id="ProblemsView.ToolWindow.TreePopup" anchor="last"/>
         </action>
         <group id="Lich.EditorPopup">
             <separator/>

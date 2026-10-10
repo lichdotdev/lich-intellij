@@ -56,4 +56,44 @@ class SnippetsTest {
         assertEquals("C:/src/a.kt", Snippets.quote("C:/src/a.kt", windows = true))
         assertEquals("src\\a.kt", Snippets.quote("src\\a.kt", windows = true))
     }
+
+    private fun failure(message: String? = null, stacktrace: String? = null, location: String? = "src/BarTest.kt:42") =
+        TestFailure("BarTest › adds", location, message, stacktrace)
+
+    @Test
+    fun `a failure is named with where it is and its trace fenced under it`() {
+        val trace = "AssertionFailedError: expected: <2> but was: <3>\n\tat BarTest.adds(BarTest.kt:42)"
+        assertEquals(
+            "Failing test: BarTest › adds (src/BarTest.kt:42)\n```\n$trace\n```\n",
+            Snippets.testFailures(listOf(failure("expected: <2> but was: <3>", trace)), fenced = true),
+        )
+    }
+
+    @Test
+    fun `a message the trace does not carry is written above it`() {
+        assertEquals(
+            "Failing test: BarTest › adds (src/BarTest.kt:42)\nboom\n\tat X\n",
+            Snippets.testFailures(listOf(failure("boom", "\tat X")), fenced = false),
+        )
+    }
+
+    @Test
+    fun `a failure with nothing to show is its name alone`() {
+        assertEquals("Failing test: BarTest › adds\n", Snippets.testFailures(listOf(failure(location = null)), fenced = true))
+    }
+
+    @Test
+    fun `several failures are separated by a blank line`() {
+        val out = Snippets.testFailures(listOf(failure("a"), failure("b")), fenced = false)
+        assertEquals("Failing test: BarTest › adds (src/BarTest.kt:42)\na\n\nFailing test: BarTest › adds (src/BarTest.kt:42)\nb\n", out)
+    }
+
+    @Test
+    fun `problems are listed above the code they are about`() {
+        val problems = listOf(Problem("ERROR", "Unresolved reference: foo"), Problem("WARNING", "Unused variable"))
+        assertEquals(
+            "ERROR: Unresolved reference: foo\nWARNING: Unused variable\nsrc/Main.kt:7\n```kotlin\nval x = foo()\n```\n",
+            Snippets.problems(problems, selection("val x = foo()", 7, 7), fenced = true),
+        )
+    }
 }

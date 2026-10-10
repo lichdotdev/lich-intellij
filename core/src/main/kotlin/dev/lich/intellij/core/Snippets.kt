@@ -18,20 +18,57 @@ data class Selection(
     val text: String,
 )
 
+/** A test that failed, as the IDE's test runner reports it. [location] is `path:line`, when the runner can tell. */
+data class TestFailure(
+    val name: String,
+    val location: String?,
+    val message: String?,
+    val stacktrace: String?,
+)
+
+/** An error or warning the IDE shows in the code. [severity] is the IDE's name for it: ERROR, WARNING, ... */
+data class Problem(val severity: String, val message: String)
+
 /** The text a gesture in the IDE becomes at the prompt. */
 object Snippets {
     /**
      * `path:12-18` and, under it, the code — in a fence when [fenced], so the
      * agent and the person reading the prompt see where it starts and stops. A
      * trailing newline leaves the cursor on a fresh line to write the question
-     * on. CRLF becomes LF: the prompt is not a Windows text file.
+     * on.
      */
     fun selection(selection: Selection, fenced: Boolean): String {
-        val header = header(selection)
-        val body = selection.text.replace("\r\n", "\n").replace('\r', '\n').trimEnd('\n')
+        return block(header(selection), selection.text, selection.language, fenced)
+    }
+
+    /** One `SEVERITY: message` line per problem, then the code they are about, as [selection] writes it. */
+    fun problems(problems: List<Problem>, code: Selection, fenced: Boolean): String =
+        problems.joinToString("") { "${it.severity}: ${it.message}\n" } + selection(code, fenced)
+
+    /**
+     * Each failure under a `Failing test:` line naming it and where it is, with
+     * its trace. Runners mostly start the trace with the exception and its
+     * message, so the message is written apart only when the trace lacks it.
+     */
+    fun testFailures(failures: List<TestFailure>, fenced: Boolean): String =
+        failures.joinToString("\n") { failure ->
+            val header = "Failing test: ${failure.name}" + (failure.location?.let { " ($it)" } ?: "")
+            val message = failure.message?.takeIf { it.isNotBlank() }
+            val trace = failure.stacktrace?.takeIf { it.isNotBlank() }
+            val body = when {
+                trace == null -> message
+                message == null || trace.contains(message) -> trace
+                else -> "$message\n$trace"
+            }
+            if (body == null) "$header\n" else block(header, body, null, fenced)
+        }
+
+    /** [header], then [text] under it — in a fence when [fenced]. CRLF becomes LF: the prompt is not a Windows text file. */
+    private fun block(header: String, text: String, language: String?, fenced: Boolean): String {
+        val body = text.replace("\r\n", "\n").replace('\r', '\n').trimEnd('\n')
         if (!fenced) return "$header\n$body\n"
         val fence = "`".repeat(maxOf(3, longestRun(body, '`') + 1))
-        return "$header\n$fence${selection.language.orEmpty()}\n$body\n$fence\n"
+        return "$header\n$fence${language.orEmpty()}\n$body\n$fence\n"
     }
 
     /**
