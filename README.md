@@ -37,8 +37,14 @@ The plugin asks lich for its live sessions and picks the one running in the fold
 2. Otherwise the project's sessions — the folder is the root of the project they belong to.
 3. Otherwise sessions of a project that contains the folder, for a module opened on its own.
 
-One match is used without asking. Several are listed, and the one you pick is remembered for that project. If
-none is near, every session is offered. **Settings › Tools › lich** turns on asking every time.
+A git worktree with no session of its own offers its project's sessions, which work in another checkout. One match of
+the first two kinds is used without asking; a session of another checkout, or of a project that only contains the
+folder, is always asked about. A project at your home directory never counts as containing a folder. Several are
+listed, and the one you pick is remembered for that project. If none is near, every session is offered. **Settings › Tools › lich** turns on asking every time.
+
+The list always ends with **Open a new session here**: lich opens a session on the folder — opening the folder as a
+project first, if it does not have it open — and the text lands at its prompt once the agent is up. What it runs
+(Claude Code by default) is set in **Settings › Tools › lich**.
 
 A session waiting on a permission prompt is shown greyed and refused by lich: text pasted there would go to the
 dialog.

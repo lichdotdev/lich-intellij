@@ -65,4 +65,35 @@ class LichClientTest {
         val error = assertFailsWith<LichException> { LichClient("lich", runner).sessions() }
         assertTrue(error.message!!.contains("no such file"))
     }
+
+    @Test
+    fun `opening a session names the project by its directory, so lich opens it when it is not yet`() {
+        val runner = Recorder { Run(0, """{"id":"s9","label":"Session 9","project":"p","kind":"codex","path":"/src/p"}""", "") }
+        val opened = LichClient("lich", runner).open("/src/p", "codex")
+
+        assertEquals(listOf("lich", "open", "--project", "/src/p", "--kind", "codex", "--json"), runner.command)
+        assertEquals("s9", opened.id)
+        assertEquals("Session 9", opened.label)
+    }
+
+    @Test
+    fun `an insert can wait longer for a prompt that is still starting`() {
+        val runner = Recorder { Run(0, """{"id":"s1","label":"a","project":"p","kind":"claude","bytes":1}""", "") }
+        LichClient("lich", runner).insert("s1", "x", promptTimeoutSeconds = 60)
+
+        assertEquals(listOf("lich", "insert", "--session", "s1", "--json", "--timeout", "60", "-"), runner.command)
+    }
+
+    @Test
+    fun `lich is not run as the session the IDE was launched from`() {
+        val environment = mutableMapOf(
+            "LICH_SESSION_ID" to "691912a8",
+            "LICH_RESTART_WAIT" to "1",
+            "LICH_PORT" to "47821",
+            "PATH" to "/usr/bin",
+        )
+        LichProcess.forgetSession(environment)
+
+        assertEquals(mapOf("LICH_PORT" to "47821", "PATH" to "/usr/bin"), environment)
+    }
 }

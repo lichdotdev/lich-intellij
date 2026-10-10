@@ -23,6 +23,9 @@ class LichSettings : PersistentStateComponent<LichSettings.State> {
 
         /** Ask which session every time, even when there is only one. */
         var alwaysAsk: Boolean = false
+
+        /** What a session opened from the IDE runs: a lich provider kind. */
+        var newSessionKind: String = "claude"
     }
 
     private var state = State()

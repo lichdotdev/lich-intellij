@@ -24,6 +24,9 @@ data class Peer(
 /** What `lich insert --json` prints: where the text went. */
 data class Inserted(val id: String, val label: String, val project: String, val kind: String, val bytes: Int)
 
+/** What `lich open --json` prints: the session it opened. */
+data class Opened(val id: String, val label: String)
+
 object Protocol {
     fun parsePeers(json: String): List<Peer> {
         val root = parse(json)
@@ -53,6 +56,13 @@ object Protocol {
             kind = obj.text("kind"),
             bytes = obj.get("bytes")?.takeIf { it.isJsonPrimitive }?.asInt ?: 0,
         )
+    }
+
+    fun parseOpened(json: String): Opened {
+        val root = parse(json)
+        if (!root.isJsonObject) throw LichException("lich answered something other than the session it opened")
+        val obj = root.asJsonObject
+        return Opened(id = obj.text("id"), label = obj.text("label"))
     }
 
     private fun parse(json: String) = try {

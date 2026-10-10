@@ -19,6 +19,7 @@ import dev.lich.intellij.core.Decision
 import dev.lich.intellij.core.Inserted
 import dev.lich.intellij.core.LichClient
 import dev.lich.intellij.core.LichLocator
+import dev.lich.intellij.core.LichProcess
 import dev.lich.intellij.core.Peer
 import dev.lich.intellij.core.SessionMatcher
 import javax.swing.Icon
@@ -50,28 +51,59 @@ class SendFlow(private val project: Project, private val text: String) {
         ) { (client, decision) ->
             when (decision) {
                 is Decision.Use -> insert(client, decision.peer)
-                is Decision.Ask -> choose(client, decision)
-                is Decision.None -> notify(decision.reason, NotificationType.WARNING)
+                is Decision.Ask -> choose(client, decision.peers, decision.reason)
+                is Decision.None -> choose(client, emptyList(), decision.reason)
             }
         }
     }
 
     private fun client() = LichClient(LichLocator.find(settings.command, IdeEnvironment))
 
-    private fun choose(client: LichClient, ask: Decision.Ask) {
+    /** One row of the chooser: a session that is running, or a new one to open on this project. */
+    private sealed interface Choice {
+        data class Running(val peer: Peer) : Choice
+
+        data class New(val kind: String) : Choice
+    }
+
+    /** With no folder open there is nowhere to open a session, and only the running ones are offered. */
+    private fun choose(client: LichClient, peers: List<Peer>, reason: String) {
+        val basePath = project.basePath
+        val choices = peers.map { Choice.Running(it) } + listOfNotNull(basePath?.let { Choice.New(settings.newSessionKind) })
+        if (choices.isEmpty()) return notify(reason, NotificationType.WARNING)
         JBPopupFactory.getInstance()
-            .createPopupChooserBuilder(ask.peers)
+            .createPopupChooserBuilder(choices)
             .setTitle("Send to lich")
-            .setAdText(ask.reason)
-            .setRenderer(PeerRenderer())
-            .setNamerForFiltering { it.label + " " + it.project }
-            .setItemChosenCallback { insert(client, it) }
+            .setAdText(reason)
+            .setRenderer(ChoiceRenderer())
+            .setNamerForFiltering {
+                when (it) {
+                    is Choice.Running -> it.peer.label + " " + it.peer.project
+                    is Choice.New -> "new ${it.kind} session"
+                }
+            }
+            .setItemChosenCallback {
+                when (it) {
+                    is Choice.Running -> insert(client, it.peer)
+                    is Choice.New -> openAndInsert(client, basePath!!, it.kind)
+                }
+            }
             .createPopup()
             .showCenteredInCurrentWindow(project)
     }
 
-    private class PeerRenderer : ColoredListCellRenderer<Peer>() {
-        override fun customizeCellRenderer(list: JList<out Peer>, peer: Peer, index: Int, selected: Boolean, hasFocus: Boolean) {
+    private class ChoiceRenderer : ColoredListCellRenderer<Choice>() {
+        override fun customizeCellRenderer(list: JList<out Choice>, choice: Choice, index: Int, selected: Boolean, hasFocus: Boolean) {
+            when (choice) {
+                is Choice.Running -> running(choice.peer)
+                is Choice.New -> {
+                    icon = AllIcons.General.Add
+                    append("Open a new ${choice.kind} session here", SimpleTextAttributes.REGULAR_ATTRIBUTES)
+                }
+            }
+        }
+
+        private fun running(peer: Peer) {
             val takesText = SessionMatcher.takesText(peer)
             icon = iconOf(peer.kind)
             append(peer.label, if (takesText) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES)
@@ -85,8 +117,8 @@ class SendFlow(private val project: Project, private val text: String) {
 
         private fun iconOf(kind: String): Icon = when (kind) {
             "shell" -> AllIcons.Nodes.Console
-            in BRANDED_KINDS -> IconLoader.getIcon("/icons/providers/$kind.svg", PeerRenderer::class.java)
-            else -> IconLoader.getIcon("/icons/lich.svg", PeerRenderer::class.java)
+            in BRANDED_KINDS -> IconLoader.getIcon("/icons/providers/$kind.svg", ChoiceRenderer::class.java)
+            else -> IconLoader.getIcon("/icons/lich.svg", ChoiceRenderer::class.java)
         }
 
         private companion object {
@@ -103,13 +135,23 @@ class SendFlow(private val project: Project, private val text: String) {
         }
     }
 
+    private fun openAndInsert(client: LichClient, projectDir: String, kind: String) {
+        background("Opening a $kind session in lich", work = {
+            val opened = client.open(projectDir, kind)
+            client.insert(opened.id, text, NEW_SESSION_PROMPT_SECONDS)
+        }) { inserted ->
+            PropertiesComponent.getInstance(project).setValue(LAST_SESSION, inserted.id)
+            sent(inserted)
+        }
+    }
+
     private fun sent(inserted: Inserted) {
         NotificationGroupManager.getInstance().getNotificationGroup(GROUP)
             .createNotification(
                 "Pasted at the prompt of “${inserted.label}” (${inserted.project}). Nothing was sent: it is waiting for you.",
                 NotificationType.INFORMATION,
             )
-            .addAction(NotificationAction.createSimple("Open lich") { raise() })
+            .addAction(NotificationAction.createSimple("Show lich") { raise() })
             .notify(project)
     }
 
@@ -117,7 +159,7 @@ class SendFlow(private val project: Project, private val text: String) {
     private fun raise() {
         ApplicationManager.getApplication().executeOnPooledThread {
             try {
-                ProcessBuilder(LichLocator.find(settings.command, IdeEnvironment)).start()
+                LichProcess.builder(listOf(LichLocator.find(settings.command, IdeEnvironment))).start()
             } catch (e: Exception) {
                 notify(e.message ?: "Could not open lich", NotificationType.WARNING)
             }
@@ -155,5 +197,8 @@ class SendFlow(private val project: Project, private val text: String) {
     private companion object {
         const val GROUP = "lich"
         const val LAST_SESSION = "dev.lich.intellij.lastSession"
+
+        // A new session's agent has to start before it shows a prompt; the slowest providers take tens of seconds.
+        const val NEW_SESSION_PROMPT_SECONDS = 60L
     }
 }

@@ -53,4 +53,17 @@ class ChooserTest {
     fun `no folder at all offers every session`() {
         assertIs<Decision.Ask>(Chooser.decide(listOf(peer("a")), null, null, false))
     }
+
+    @Test
+    fun `a session whose project only contains the folder is asked about, even alone`() {
+        val inside = Files.createDirectories(java.nio.file.Path.of(root, "modules/core")).toString()
+        val ask = assertIs<Decision.Ask>(Chooser.decide(listOf(peer("home")), inside, null, false))
+        assertEquals(listOf(peer("home")), ask.peers)
+    }
+
+    @Test
+    fun `a containing session is asked about even when it was the one used last`() {
+        val inside = Files.createDirectories(java.nio.file.Path.of(root, "modules/core")).toString()
+        assertIs<Decision.Ask>(Chooser.decide(listOf(peer("home")), inside, "home", false))
+    }
 }

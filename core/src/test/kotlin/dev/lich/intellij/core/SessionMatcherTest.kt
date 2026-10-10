@@ -63,4 +63,18 @@ class SessionMatcherTest {
         assertTrue(SessionMatcher.takesText(peer("a", root, state = "busy")))
         assertTrue(SessionMatcher.takesText(peer("a", root, state = "")))
     }
+
+    @Test
+    fun `a project at the home directory does not contain every folder under it`() {
+        val atHome = peer("home", root, project = root)
+
+        assertNull(SessionMatcher.nearest(listOf(atHome), module.toString(), home = root.toString()))
+    }
+
+    @Test
+    fun `a session at the home directory still matches the home directory itself`() {
+        val atHome = peer("home", root, project = root)
+
+        assertEquals(Fit.EXACT, SessionMatcher.nearest(listOf(atHome), root.toString(), home = root.toString())!!.fit)
+    }
 }

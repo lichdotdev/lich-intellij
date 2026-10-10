@@ -12,10 +12,28 @@ fun interface CommandRunner {
     fun run(command: List<String>, stdin: String?, timeoutSeconds: Long): Run
 }
 
+/**
+ * How every `lich` child process is started. An IDE launched from a lich
+ * terminal (`idea .` in a shell session) inherits that session's environment,
+ * and two of its variables would make lich mistake the IDE for the session:
+ * LICH_SESSION_ID files whatever the IDE opens as that session's work, and
+ * LICH_RESTART_WAIT tells a second launch it is a restart's successor, so it
+ * fights the running window for its port instead of raising it.
+ */
+object LichProcess {
+    private val SESSION_ONLY = setOf("LICH_SESSION_ID", "LICH_RESTART_WAIT")
+
+    fun builder(command: List<String>): ProcessBuilder = ProcessBuilder(command).also { forgetSession(it.environment()) }
+
+    fun forgetSession(environment: MutableMap<String, String>) {
+        environment.keys.removeAll(SESSION_ONLY)
+    }
+}
+
 /** The real thing: a child process, UTF-8 both ways, killed if it outstays its timeout. */
 object ProcessRunner : CommandRunner {
     override fun run(command: List<String>, stdin: String?, timeoutSeconds: Long): Run {
-        val process = ProcessBuilder(command).redirectErrorStream(false).start()
+        val process = LichProcess.builder(command).redirectErrorStream(false).start()
         val out = StringBuilder()
         val err = StringBuilder()
         // Drained on their own threads: a child that fills a pipe nobody reads
@@ -54,10 +72,30 @@ class LichClient(
         return peers
     }
 
-    /** Pastes [text] at [sessionId]'s prompt, without sending it. */
-    fun insert(sessionId: String, text: String): Inserted {
-        val run = exec(listOf("insert", "--session", sessionId, "--json", "--timeout", "10", "-"), text, INSERT)
+    /**
+     * Pastes [text] at [sessionId]'s prompt, without sending it. lich waits up to
+     * [promptTimeoutSeconds] for the prompt, which a session just opened needs while its agent starts.
+     */
+    fun insert(sessionId: String, text: String, promptTimeoutSeconds: Long = PROMPT): Inserted {
+        val args = listOf("insert", "--session", sessionId, "--json", "--timeout", promptTimeoutSeconds.toString(), "-")
+        val run = exec(args, text, promptTimeoutSeconds + GRACE)
         return Protocol.parseInserted(run.stdout)
+    }
+
+    /**
+     * Opens a [kind] session in [dir]; lich opens the directory as a project first
+     * when it is not holding it open. A linked worktree is opened as its main
+     * checkout's project, on the branch it holds — lich reuses the worktree that
+     * already holds a branch rather than making another.
+     */
+    fun open(dir: String, kind: String): Opened {
+        val where = GitWorktree.of(dir)?.let {
+            val branch = it.branch
+                ?: throw LichException("This worktree is on a detached HEAD, and lich opens a worktree by its branch: check out a branch first.")
+            listOf("--project", it.mainCheckout, "--worktree", branch)
+        } ?: listOf("--project", dir)
+        val run = exec(listOf("open") + where + listOf("--kind", kind, "--json"), null, OPEN)
+        return Protocol.parseOpened(run.stdout)
     }
 
     private fun exec(args: List<String>, stdin: String?, timeout: Long): Run {
@@ -80,7 +118,10 @@ class LichClient(
 
     private companion object {
         const val SHORT = 10L
-        // The insert waits up to 10s for the session's prompt (--timeout above), so the process gets a beat more.
-        const val INSERT = 20L
+        const val PROMPT = 10L
+        // The insert waits for the session's prompt itself (--timeout), so the process gets a beat more.
+        const val GRACE = 10L
+        // Opening may open the project first, which is more than listing sessions.
+        const val OPEN = 30L
     }
 }
