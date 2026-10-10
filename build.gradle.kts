@@ -84,7 +84,7 @@ kotlin {
 }
 
 changelog {
-    repositoryUrl = "https://github.com/omartelo/lich-intellij"
+    repositoryUrl = "https://github.com/lichdotdev/lich-intellij"
     versionPrefix = "v"
     // Keep a Changelog lists only the sections a release has; the cut leaves [Unreleased] empty, not six empty headings.
     groups.empty()
