@@ -75,15 +75,18 @@ class LichStatusWidget(private val project: Project) : StatusBarWidget, StatusBa
 
     override fun getAlignment(): Float = Component.CENTER_ALIGNMENT
 
-    /** Each session on its own line, with its provider's mark, what it is doing and where; HTML, as the status bar renders it. */
+    /**
+     * Each session on its own line, with what it runs, what it is doing and where; HTML, as the status bar renders
+     * it. The provider is named in words: an icon in this HTML is not drawn by the status bar's tooltip.
+     */
     override fun getTooltipText(): String {
         val peers = near
         if (peers.isNullOrEmpty()) return "lich sessions on this project. Click to show lich."
-        val rows = peers.mapIndexed { index, peer ->
+        val rows = peers.map { peer ->
             val where = FileUtil.getLocationRelativeToUserHome(peer.path.ifEmpty { peer.projectPath })
             HtmlChunk.tag("tr").children(
-                HtmlChunk.tag("td").child(HtmlChunk.icon("peer$index", PeerPresentation.icon(peer.kind))),
                 HtmlChunk.tag("td").child(HtmlChunk.text(peer.label).bold()),
+                HtmlChunk.tag("td").child(HtmlChunk.text(peer.kind)),
                 HtmlChunk.tag("td").child(stateOf(peer)),
                 HtmlChunk.tag("td").child(HtmlChunk.text(where).wrapWith(HtmlChunk.font(ColorUtil.toHex(UIUtil.getContextHelpForeground())))),
             )

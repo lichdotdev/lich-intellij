@@ -25,7 +25,7 @@ internal object PeerPresentation {
         }
     }
 
-    fun icon(kind: String): Icon = when (kind) {
+    private fun icon(kind: String): Icon = when (kind) {
         "shell" -> AllIcons.Nodes.Console
         in BRANDED_KINDS -> IconLoader.getIcon("/icons/providers/$kind.svg", PeerPresentation::class.java)
         else -> IconLoader.getIcon("/icons/lich.svg", PeerPresentation::class.java)
