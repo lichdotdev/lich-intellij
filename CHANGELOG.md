@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-11
+
 ### Fixed
 
 - **The status bar tooltip names each session's agent** — Claude Code, Codex, a shell — beside its state and
@@ -37,5 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sessions wear their provider's mark** — Claude Code, Codex, Antigravity, opencode, oh-my-pi, Cursor — in
   every list, and a terminal for a shell session.
 
-[Unreleased]: https://github.com/lichdotdev/lich-intellij/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/lichdotdev/lich-intellij/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/lichdotdev/lich-intellij/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/lichdotdev/lich-intellij/commits/v0.1.0
