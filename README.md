@@ -11,6 +11,8 @@
     runs — and keep an eye on your sessions from the status bar.
   </p>
   <p>
+    <a href="https://plugins.jetbrains.com/plugin/34980-lich"><img alt="JetBrains Marketplace" src="https://img.shields.io/jetbrains/plugin/v/34980?label=marketplace&color=9b7cf0" /></a>
+    <a href="https://plugins.jetbrains.com/plugin/34980-lich"><img alt="Downloads" src="https://img.shields.io/jetbrains/plugin/d/34980?color=9b7cf0" /></a>
     <a href="https://github.com/lichdotdev/lich-intellij/releases"><img alt="Release" src="https://img.shields.io/github/v/release/lichdotdev/lich-intellij?color=9b7cf0&label=release" /></a>
     <img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2024.3%2B-000?logo=intellijidea&logoColor=white" />
     <img alt="lich" src="https://img.shields.io/badge/lich-0.65%2B-9b7cf0" />
@@ -78,10 +80,11 @@ A session waiting on a permission prompt is greyed out: text pasted there would 
 
 ## Install
 
-1. Download `lich-intellij-<version>.zip` from the [latest release](https://github.com/lichdotdev/lich-intellij/releases).
-2. **Settings › Plugins › ⚙ › Install Plugin from Disk…** and pick the zip.
+<a href="https://plugins.jetbrains.com/plugin/34980-lich"><img alt="Get from Marketplace" src="https://img.shields.io/badge/Get%20from-Marketplace-000?style=for-the-badge&logo=jetbrains&logoColor=white&labelColor=ff318c" /></a>
 
-The JetBrains Marketplace listing is on its way.
+In IntelliJ IDEA, **Settings › Plugins › Marketplace**, search for **lich** and install. Or download
+`lich-intellij-<version>.zip` from the [latest release](https://github.com/lichdotdev/lich-intellij/releases) and pick it
+in **Settings › Plugins › ⚙ › Install Plugin from Disk…**.
 
 ### Requirements
 
