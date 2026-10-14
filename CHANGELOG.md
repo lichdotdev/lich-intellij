@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-14
+
 ### Added
 
 - **Review comments, handed to the session as one paste.** Right-click a line or a selection, in the editor or on the
@@ -47,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sessions wear their provider's mark** — Claude Code, Codex, Antigravity, opencode, oh-my-pi, Cursor — in
   every list, and a terminal for a shell session.
 
-[Unreleased]: https://github.com/lichdotdev/lich-intellij/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/lichdotdev/lich-intellij/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/lichdotdev/lich-intellij/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/lichdotdev/lich-intellij/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/lichdotdev/lich-intellij/commits/v0.1.0
