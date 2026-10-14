@@ -36,6 +36,9 @@ work when nobody knows it and that the call site never shows. The mechanism and 
 
 ## IntelliJ
 
+- **A review comment names its lines as they were when it was written** (`ReviewBatch`): nothing follows them as
+  the file is edited, so a comment written before an edit above it points at the wrong lines when the batch is
+  sent. For the same reason the batch is kept in memory and lost when the project closes.
 - **Two features stand on IntelliJ internals**: "Send problem to lich" reads highlights through
   `DaemonCodeAnalyzerEx`, and "Send Changes to lich" builds its diff with `IdeaTextPatchBuilder` and
   `UnifiedDiffWriter` from `intellij.platform.vcs.impl` (on the classpath through `bundledModule`). Both are

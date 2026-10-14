@@ -23,9 +23,10 @@ import javax.swing.JList
  * it has to, pastes, and says where it went.
  *
  * Every call to lich is a child process, so none of it runs on the UI thread;
- * what needs the UI (the chooser, the balloon) is handed back to it.
+ * what needs the UI (the chooser, the balloon) is handed back to it, and so is
+ * [onPasted], called once the text is at a prompt.
  */
-class SendFlow(private val project: Project, private val text: String) {
+class SendFlow(private val project: Project, private val text: String, private val onPasted: () -> Unit = {}) {
     private val settings = LichSettings.getInstance().state
 
     fun start() {
@@ -115,6 +116,7 @@ class SendFlow(private val project: Project, private val text: String) {
     }
 
     private fun sent(inserted: Inserted) {
+        onPasted()
         LichWindow.notify(
             project,
             "Pasted at the prompt of “${inserted.label}” (${inserted.project}). Nothing was sent: it is waiting for you.",

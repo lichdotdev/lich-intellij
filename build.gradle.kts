@@ -80,6 +80,9 @@ kotlin {
         // The oldest IDE supported (sinceBuild 243) runs on the Kotlin stdlib it bundles, 2.0: a call into anything
         // newer compiles here and fails there with NoSuchMethodError.
         apiVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
+        // Platform interfaces built with DefaultImpls (ToolWindowFactory among them) otherwise get a bridge in every
+        // implementing class for each default method, @Internal ones included, and verifyPlugin fails on those.
+        jvmDefault = org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode.NO_COMPATIBILITY
     }
 }
 

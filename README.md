@@ -41,6 +41,20 @@ why does this run twice on startup?█
 | **Send problem to lich** | `Alt+Enter` on an error or warning, or right-click it in the Problems view | What the IDE says, over the lines it is about |
 | **Send Failure to lich** | Right-click a failed test, class or suite in the test runner | Each failed test with its file, line, message and stack trace |
 | **Send Changes to lich** | Right-click changed files in the Commit view | Their diff, for a review or a commit message |
+| **Add Comment to lich Review** | Editor right-click, or the file's side of a diff | Nothing yet: the comment joins a batch, and *Send to lich* pastes them all as one list |
+
+Review comments wait in the **lich Review** tool window, which appears with the first one: reword one with a double-click or remove it, add a note
+about the change as a whole, and *Send to lich* pastes them as one prompt, the way lich's own review panel does —
+
+```text
+Review comments:
+
+- src/main/kotlin/App.kt:12-18 — leaks the listener
+- src/main/kotlin/Boot.kt:4 — rename to start
+- these are the same bug
+```
+
+They live in memory until they are sent: closing the project drops them.
 
 Every session in a list wears its agent's mark — Claude Code, Codex, Antigravity, opencode, oh-my-pi, Cursor — or a
 terminal for a shell.

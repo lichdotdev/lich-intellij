@@ -91,12 +91,11 @@ object Snippets {
         return if (style == FileStyle.AT_MENTION) "@$quoted" else quoted
     }
 
-    private fun header(selection: Selection): String =
-        if (selection.endLine <= selection.startLine) {
-            "${selection.displayPath}:${selection.startLine}"
-        } else {
-            "${selection.displayPath}:${selection.startLine}-${selection.endLine}"
-        }
+    private fun header(selection: Selection): String = location(selection.displayPath, selection.startLine, selection.endLine)
+
+    /** `path:12` for one line, `path:12-18` for several: where a selection or a review comment is. */
+    fun location(displayPath: String, startLine: Int, endLine: Int): String =
+        if (endLine <= startLine) "$displayPath:$startLine" else "$displayPath:$startLine-$endLine"
 
     // Mirrors quotePath in lich's frontend (drop-files.ts) and internal/shquote:
     // an ordinary path of either OS is written bare, anything else is single

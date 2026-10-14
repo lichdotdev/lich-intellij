@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Review comments, handed to the session as one paste.** Right-click a line or a selection, in the editor or on the
+  file's side of a diff, and *Add Comment to lich Review*: the comment waits in the **lich Review** tool window, where
+  a double-click rewords it and the remove button drops it, beside a note about the change as a whole. *Send to lich*
+  pastes them all as one list, each anchored to its file and lines, the way lich's own review panel sends them. Only
+  a paste that landed clears them.
+
 ## [0.1.1] - 2026-10-11
 
 ### Fixed

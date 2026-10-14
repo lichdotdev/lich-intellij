@@ -27,24 +27,23 @@ class SendSelectionAction : AnAction() {
         SendFlow(project, Snippets.selection(selection, LichSettings.getInstance().state.fenced)).start()
     }
 
-    /**
-     * The lines the selection covers, 1-based and inclusive. A selection that
-     * ends at the start of a line (a whole-line drag) does not include that
-     * line, which would otherwise be named though none of it was selected.
-     */
     private fun selectionOf(editor: Editor, displayPath: String, language: String?): Selection? {
-        val model = editor.selectionModel
-        val text = model.selectedText?.takeIf { it.isNotBlank() } ?: return null
-        val document = editor.document
-        val start = model.selectionStart
-        val end = model.selectionEnd
-        val lastOffset = if (end > start && document.charsSequence[end - 1] == '\n') end - 1 else end
-        return Selection(
-            displayPath = displayPath,
-            startLine = document.getLineNumber(start) + 1,
-            endLine = document.getLineNumber(lastOffset) + 1,
-            language = language,
-            text = text,
-        )
+        val text = editor.selectionModel.selectedText?.takeIf { it.isNotBlank() } ?: return null
+        val lines = selectedLines(editor)
+        return Selection(displayPath, lines.first, lines.last, language, text)
     }
+}
+
+/**
+ * The lines the selection covers, 1-based and inclusive; the caret's line when nothing is selected. A selection
+ * that ends at the start of a line (a whole-line drag) does not include that line, which would otherwise be named
+ * though none of it was selected.
+ */
+internal fun selectedLines(editor: Editor): IntRange {
+    val model = editor.selectionModel
+    val document = editor.document
+    val start = model.selectionStart
+    val end = model.selectionEnd
+    val lastOffset = if (end > start && document.charsSequence[end - 1] == '\n') end - 1 else end
+    return document.getLineNumber(start) + 1..document.getLineNumber(lastOffset) + 1
 }

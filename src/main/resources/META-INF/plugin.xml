@@ -27,6 +27,11 @@
             id="io.omartelo.lich.intellij.settings"
             displayName="lich"/>
         <notificationGroup id="lich" displayType="BALLOON"/>
+        <toolWindow id="lich Review"
+                    factoryClass="io.omartelo.lich.intellij.ReviewBatchToolWindowFactory"
+                    anchor="bottom"
+                    icon="/icons/lich.svg"
+                    canCloseContents="false"/>
         <statusBarWidgetFactory id="lich.sessions" implementation="io.omartelo.lich.intellij.LichStatusWidgetFactory"/>
         <intentionAction>
             <className>io.omartelo.lich.intellij.SendProblemIntention</className>
@@ -75,10 +80,18 @@
                 description="Paste the diff of the selected changes at the prompt of a lich session">
             <add-to-group group-id="ChangesViewPopupMenu" anchor="last"/>
         </action>
+        <action id="Lich.AddReviewComment"
+                class="io.omartelo.lich.intellij.AddReviewCommentAction"
+                icon="/icons/lich.svg"
+                text="Add Comment to lich Review"
+                description="Write a comment on these lines; the comments go to a lich session together, as one paste">
+            <add-to-group group-id="Diff.EditorPopupMenu" anchor="last"/>
+        </action>
         <group id="Lich.EditorPopup">
             <separator/>
             <reference ref="Lich.SendSelection"/>
             <reference ref="Lich.SendFile"/>
+            <reference ref="Lich.AddReviewComment"/>
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </group>
     </actions>
