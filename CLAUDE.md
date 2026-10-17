@@ -1,7 +1,7 @@
 # lich for IntelliJ IDEA
 
 An IntelliJ Platform plugin that sends what the developer is looking at — a selection, a file, a failed test, a
-problem, a diff — to a [lich](https://github.com/omartelo/lich) session, and shows the project's sessions in the
+problem, a diff — to a [lich](https://github.com/lichdotdev/lich) session, and shows the project's sessions in the
 status bar. lich is an ADE that runs AI coding agents (Claude Code, Codex and the rest) side by side; its source
 lives in `~/try/skipo` on this machine, and its CLI contract in that repo's `docs/cli.md` and `docs/stability.md`.
 The plugin is built for other developers to use, not only its author: docs, errors and defaults answer to a

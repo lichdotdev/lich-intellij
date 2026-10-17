@@ -1,10 +1,10 @@
 <idea-plugin>
     <id>io.omartelo.lich</id>
     <name>lich</name>
-    <vendor url="https://github.com/omartelo/lich">lich</vendor>
+    <vendor url="https://github.com/lichdotdev/lich">lich</vendor>
 
     <description><![CDATA[
-        Send what you are looking at in the IDE to a <a href="https://github.com/omartelo/lich">lich</a>
+        Send what you are looking at in the IDE to a <a href="https://github.com/lichdotdev/lich">lich</a>
         session.
         <ul>
             <li><b>Send selection to lich</b> pastes the selected code, with its file and line range,
