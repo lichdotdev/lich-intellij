@@ -7,7 +7,7 @@
   <p><strong>Hand your coding agent what you are looking at, without leaving the editor.</strong></p>
   <p>
     Send a selection, a file, a failed test, an error or a diff to a
-    <a href="https://github.com/omartelo/lich">lich</a> session — Claude Code, Codex, opencode or any agent lich
+    <a href="https://github.com/lichdotdev/lich">lich</a> session — Claude Code, Codex, opencode or any agent lich
     runs — and keep an eye on your sessions from the status bar.
   </p>
   <p>
@@ -122,8 +122,8 @@ the other JetBrains IDEs may run it, but nobody checks that they do — if you u
 ## How it talks to lich
 
 Only through the `lich` command, the part of lich covered by its
-[stability promise](https://github.com/omartelo/lich/blob/main/docs/stability.md) and documented in its
-[`docs/cli.md`](https://github.com/omartelo/lich/blob/main/docs/cli.md):
+[stability promise](https://github.com/lichdotdev/lich/blob/main/docs/stability.md) and documented in its
+[`docs/cli.md`](https://github.com/lichdotdev/lich/blob/main/docs/cli.md):
 
 ```sh
 lich sessions --json                                  # who is running, where, and doing what
